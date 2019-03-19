@@ -1,28 +1,19 @@
 const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
 
 const app = express();
 
-app.use('/favicon.ico', (req, res) => res.status(204));
+const usersRoutes = require('./routes/users');
+const indexRoutes = require('./routes/index');
 
-app.use('/two-middleware', (req, res, next) => {
-    console.log('hello 1');
-    next();
-});
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/two-middleware', (req, res, next) => {
-    console.log('hello 2');
-    res.send('<h1>Hello, there</h1>');
-})
+app.get('/favicon.ico', (req, res) => res.status(204));
 
-app.use('/users', (req, res, next) => {
-    console.log(req.baseUrl);
-    res.send('<h1>/users</h1>');
-});
-
-app.use('/', (req, res, next) => {
-    console.log(req.baseUrl);
-    res.send('<h1>Home Page</h1>');
-});
+app.get('/users', usersRoutes);
+app.get('/', indexRoutes);
 
 app.listen(3000);
 
